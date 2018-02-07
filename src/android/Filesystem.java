@@ -48,8 +48,8 @@ public abstract class Filesystem {
     }
 
     public interface ReadFileCallback {
-		public void handleData(InputStream inputStream, String contentType) throws IOException;
-	}
+        public void handleData(InputStream inputStream, String contentType) throws IOException;
+    }
 
     public static JSONObject makeEntryForURL(LocalFilesystemURL inputURL, Uri nativeURL) {
         try {
@@ -100,13 +100,13 @@ public abstract class Filesystem {
     }
 
     abstract JSONObject getFileForLocalURL(LocalFilesystemURL inputURL, String path,
-			JSONObject options, boolean directory) throws FileExistsException, IOException, TypeMismatchException, EncodingException, JSONException;
+            JSONObject options, boolean directory) throws FileExistsException, IOException, TypeMismatchException, EncodingException, JSONException;
 
-	abstract boolean removeFileAtLocalURL(LocalFilesystemURL inputURL) throws InvalidModificationException, NoModificationAllowedException;
+    abstract boolean removeFileAtLocalURL(LocalFilesystemURL inputURL) throws InvalidModificationException, NoModificationAllowedException;
 
-	abstract boolean recursiveRemoveFileAtLocalURL(LocalFilesystemURL inputURL) throws FileExistsException, NoModificationAllowedException;
+    abstract boolean recursiveRemoveFileAtLocalURL(LocalFilesystemURL inputURL) throws FileExistsException, NoModificationAllowedException;
 
-	abstract LocalFilesystemURL[] listChildren(LocalFilesystemURL inputURL) throws FileNotFoundException;
+    abstract LocalFilesystemURL[] listChildren(LocalFilesystemURL inputURL) throws FileNotFoundException;
 
     public final JSONArray readEntriesAtLocalURL(LocalFilesystemURL inputURL) throws FileNotFoundException {
         LocalFilesystemURL[] children = listChildren(inputURL);
@@ -119,7 +119,7 @@ public abstract class Filesystem {
         return entries;
     }
 
-	abstract JSONObject getFileMetadataForLocalURL(LocalFilesystemURL inputURL) throws FileNotFoundException;
+    abstract JSONObject getFileMetadataForLocalURL(LocalFilesystemURL inputURL) throws FileNotFoundException;
 
     public Uri getRootUri() {
         return rootUri;
@@ -203,14 +203,14 @@ public abstract class Filesystem {
         return rootEntry;
     }
 
-	public JSONObject getParentForLocalURL(LocalFilesystemURL inputURL) throws IOException {
+    public JSONObject getParentForLocalURL(LocalFilesystemURL inputURL) throws IOException {
         Uri parentUri = inputURL.uri;
         String parentPath = new File(inputURL.uri.getPath()).getParent();
         if (!"/".equals(parentPath)) {
             parentUri = inputURL.uri.buildUpon().path(parentPath + '/').build();
-		}
-		return getEntryForLocalURL(LocalFilesystemURL.parse(parentUri));
-	}
+        }
+        return getEntryForLocalURL(LocalFilesystemURL.parse(parentUri));
+    }
 
     protected LocalFilesystemURL makeDestinationURL(String newName, LocalFilesystemURL srcURL, LocalFilesystemURL destURL, boolean isDirectory) {
         // I know this looks weird but it is to work around a JSON bug.
@@ -230,13 +230,13 @@ public abstract class Filesystem {
         return LocalFilesystemURL.parse(newDest);
     }
 
-	/* Read a source URL (possibly from a different filesystem, srcFs,) and copy it to
-	 * the destination URL on this filesystem, optionally with a new filename.
-	 * If move is true, then this method should either perform an atomic move operation
-	 * or remove the source file when finished.
-	 */
+    /* Read a source URL (possibly from a different filesystem, srcFs,) and copy it to
+     * the destination URL on this filesystem, optionally with a new filename.
+     * If move is true, then this method should either perform an atomic move operation
+     * or remove the source file when finished.
+     */
     public JSONObject copyFileToURL(LocalFilesystemURL destURL, String newName,
-            Filesystem srcFs, LocalFilesystemURL srcURL, boolean move) throws IOException, InvalidModificationException, JSONException, NoModificationAllowedException, FileExistsException {
+            Filesystem srcFs, LocalFilesystemURL srcURL, boolean move) throws IOException, InvalidModificationException, JSONException, NoModificationAllowedException, FileExistsException, Exception {
         // First, check to see that we can do it
         if (move && !srcFs.canRemoveFileAtLocalURL(srcURL)) {
             throw new NoModificationAllowedException("Cannot move file at source URL");
@@ -267,7 +267,7 @@ public abstract class Filesystem {
     }
 
     public void readFileAtURL(LocalFilesystemURL inputURL, long start, long end,
-                              ReadFileCallback readFileCallback) throws IOException {
+                              ReadFileCallback readFileCallback) throws IOException, Exception {
         CordovaResourceApi.OpenForReadResult ofrr = resourceApi.openForRead(toNativeUri(inputURL));
         if (end < 0) {
             end = ofrr.length;
@@ -287,18 +287,18 @@ public abstract class Filesystem {
         }
     }
 
-	abstract long writeToFileAtURL(LocalFilesystemURL inputURL, String data, int offset,
-			boolean isBinary) throws NoModificationAllowedException, IOException;
+    abstract long writeToFileAtURL(LocalFilesystemURL inputURL, String data, int offset,
+            boolean isBinary) throws NoModificationAllowedException, IOException;
 
-	abstract long truncateFileAtURL(LocalFilesystemURL inputURL, long size)
-			throws IOException, NoModificationAllowedException;
+    abstract long truncateFileAtURL(LocalFilesystemURL inputURL, long size)
+            throws IOException, NoModificationAllowedException;
 
-	// This method should return null if filesystem urls cannot be mapped to paths
-	abstract String filesystemPathForURL(LocalFilesystemURL url);
+    // This method should return null if filesystem urls cannot be mapped to paths
+    abstract String filesystemPathForURL(LocalFilesystemURL url);
 
-	abstract LocalFilesystemURL URLforFilesystemPath(String path);
+    abstract LocalFilesystemURL URLforFilesystemPath(String path);
 
-	abstract boolean canRemoveFileAtLocalURL(LocalFilesystemURL inputURL);
+    abstract boolean canRemoveFileAtLocalURL(LocalFilesystemURL inputURL);
 
     protected class LimitedInputStream extends FilterInputStream {
         long numBytesToRead;
