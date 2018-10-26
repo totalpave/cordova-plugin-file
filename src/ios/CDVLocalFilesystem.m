@@ -645,21 +645,48 @@
     NSString* mimeType = nil;
 
     if (fullPath) {
-        CFStringRef typeId = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[fullPath pathExtension], NULL);
-        if (typeId) {
-            mimeType = (__bridge_transfer NSString*)UTTypeCopyPreferredTagWithClass(typeId, kUTTagClassMIMEType);
-            if (!mimeType) {
-                // special case for m4a
-                if ([(__bridge NSString*)typeId rangeOfString : @"m4a-audio"].location != NSNotFound) {
-                    mimeType = @"audio/mp4";
-                } else if ([[fullPath pathExtension] rangeOfString:@"wav"].location != NSNotFound) {
-                    mimeType = @"audio/wav";
-                } else if ([[fullPath pathExtension] rangeOfString:@"css"].location != NSNotFound) {
-                    mimeType = @"text/css";
-                }
-            }
-            CFRelease(typeId);
+        NSArray* pathParts = [fullPath componentsSeparatedByString:@"."];
+        NSString* extension = pathParts[1];
+        
+        if ([extension isEqualToString:@"json"]) {
+            return @"application/json";
         }
+        else if ([extension isEqualToString:@"jpg"] || [extension isEqualToString:@"jpeg"]) {
+            return @"image/jpg";
+        }
+        else if ([extension isEqualToString:@"png"]) {
+            return @"image/png";
+        }
+        else if ([extension isEqualToString:@"gif"]) {
+            return @"image/gif";
+        }
+        else if ([extension isEqualToString:@"svg"]) {
+            return @"image/svg+xml";
+        }
+        else if ([extension isEqualToString:@"css"]) {
+            return @"text/css";
+        }
+        else {
+            return @"application/octet-stream";
+        }
+
+        //This caused bad stuff on iOS12, makes apps hang.
+
+        // CFStringRef typeId = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[fullPath pathExtension], NULL);
+        // if (typeId) {
+        //     mimeType = (__bridge_transfer NSString*)UTTypeCopyPreferredTagWithClass(typeId, kUTTagClassMIMEType);
+        //     if (!mimeType) {
+        //         // special case for m4a
+        //         if ([(__bridge NSString*)typeId rangeOfString : @"m4a-audio"].location != NSNotFound) {
+        //             mimeType = @"audio/mp4";
+        //         } else if ([[fullPath pathExtension] rangeOfString:@"wav"].location != NSNotFound) {
+        //             mimeType = @"audio/wav";
+        //         } else if ([[fullPath pathExtension] rangeOfString:@"css"].location != NSNotFound) {
+        //             mimeType = @"text/css";
+        //         }
+        //     }
+        //     CFRelease(typeId);
+        // }
     }
     return mimeType;
 }
@@ -736,15 +763,41 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
         return nil;
     }
+
+    NSArray* pathParts = [path componentsSeparatedByString:@"."];
+    NSString* extension = pathParts[1];
     
-    CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
-    CFStringRef mimeType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
-    CFRelease(UTI);
-    
-    if (!mimeType) {
+    if ([extension isEqualToString:@"json"]) {
+        return @"application/json";
+    }
+    else if ([extension isEqualToString:@"jpg"] || [extension isEqualToString:@"jpeg"]) {
+        return @"image/jpg";
+    }
+    else if ([extension isEqualToString:@"png"]) {
+        return @"image/png";
+    }
+    else if ([extension isEqualToString:@"gif"]) {
+        return @"image/gif";
+    }
+    else if ([extension isEqualToString:@"svg"]) {
+        return @"image/svg+xml";
+    }
+    else if ([extension isEqualToString:@"css"]) {
+        return @"text/css";
+    }
+    else {
         return @"application/octet-stream";
     }
-    return (__bridge NSString *)mimeType;
+    
+    //This caused bad stuff on iOS12, makes apps hang.
+    // CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
+    // CFStringRef mimeType = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+    // CFRelease(UTI);
+    
+    // if (!mimeType) {
+    //     return @"application/octet-stream";
+    // }
+    // return (__bridge NSString *)mimeType;
 }
 
 @end
