@@ -646,7 +646,7 @@
 
     if (fullPath) {
         NSArray* pathParts = [fullPath componentsSeparatedByString:@"."];
-        NSString* extension = pathParts[1];
+        NSString* extension = [pathParts lastObject];
         
         if ([extension isEqualToString:@"json"]) {
             return @"application/json";
