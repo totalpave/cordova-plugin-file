@@ -772,7 +772,14 @@
     }
 
     NSArray* pathParts = [path componentsSeparatedByString:@"."];
-    NSString* extension = pathParts[1];
+    NSString* extension = nil;
+        
+        if ([pathParts count] > 0) {
+            extension = [pathParts lastObject];
+        }
+        else {
+            extension = @"";
+        }
     
     if ([extension isEqualToString:@"json"]) {
         return @"application/json";
