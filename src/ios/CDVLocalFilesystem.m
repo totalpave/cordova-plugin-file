@@ -646,7 +646,14 @@
 
     if (fullPath) {
         NSArray* pathParts = [fullPath componentsSeparatedByString:@"."];
-        NSString* extension = [pathParts lastObject];
+        NSString* extension = nil;
+        
+        if ([pathParts length] > 0) {
+            extension = [pathParts lastObject];
+        }
+        else {
+            extension = @"";
+        }
         
         if ([extension isEqualToString:@"json"]) {
             return @"application/json";
