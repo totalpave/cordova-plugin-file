@@ -648,7 +648,7 @@
         NSArray* pathParts = [fullPath componentsSeparatedByString:@"."];
         NSString* extension = nil;
         
-        if ([pathParts length] > 0) {
+        if ([pathParts count] > 0) {
             extension = [pathParts lastObject];
         }
         else {
