@@ -283,9 +283,10 @@ FileReader.prototype.readAsBinaryString = function (file) {
  * @param file          {File} File object containing file properties
  */
 FileReader.prototype.readAsArrayBuffer = function (file) {
-    if (initRead(this, file)) {
-        return this._realReader.readAsArrayBuffer(file);
-    }
+    // The native readAsArrayBuffer expects a blob, which doesn't match the cordova-plugin-file API signature.
+    // if (initRead(this, file)) {
+    //     return this._realReader.readAsArrayBuffer(file);
+    // }
 
     var totalSize = file.end - file.start;
     readSuccessCallback.bind(this)('readAsArrayBuffer', null, file.start, totalSize, function (r) {
